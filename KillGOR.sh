@@ -1,0 +1,2 @@
+mv ~/.steam/steam/ubuntu12_64/gameoverlayrenderer.so ~/.steam/steam/ubuntu12_64/gameoverlayrenderer64.so
+mv ~/.steam/steam/ubuntu12_32/gameoverlayrenderer.so ~/.steam/steam/ubuntu12_32/gameoverlayrenderer32.so
