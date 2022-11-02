@@ -1,4 +1,4 @@
-#GENSHIN STORY SKIPPING SCRIPT!
+#GENSHIN STORY SKIPPING AND AUTOWALKING SCRIPT!
 
   #DEPENDENCIES: xdotool, wmctrl, xinput
 
@@ -17,13 +17,13 @@
 . ~/.scripts/KillGOR.sh
 
 #=============OPTIONS=============#
-  #Set the time before the script starts to keep the script running while Stardew Starts up
+  #Set the time before the script starts to keep the script running while the game Starts up
 timer=18
 
   #when true This Prevents the Program from exiting and does not clear the scripts output as it runs
 log=false
 
-  #Sets this to match the window decoration Title of Stardew
+  #Sets this to match the window decoration Title of the game window
 win="Genshin Impact"
 
   #determine a location that the mouse will move to when activating the Autoclicker
@@ -36,7 +36,7 @@ browser="Waterfox"
 
   #My Default = Logitech G500s Laser Gaming Mouse Keyboard	id=18 Key112 = PGup
   #use [xinput list] (no brackets) to determine which device you are using Auto Cancel (Keyboard, Mouse, Controller etc.)to get the DEVICE ID
-devid=9
+devid=8 #For Both auto click and autowalk
 
   #to determine the keyboard/mouse button/key ID
   #use [sleep 5; xinput query-state "DEVICE ID"] (no brackets or quotations) Hold down the desired key before the 5 second duration is up and scroll through the output
@@ -44,10 +44,16 @@ devid=9
 buttorkey=key #if the output of [sleep 5; xinput query-state "DEVICE ID"] was a key or button set accordingly
 
   #Key/button ID number from the output of [sleep 5; xinput query-state "DEVICE ID"]
-key=22
+key=62 #AUTO CLICK BUTTON
+
+key2=108 #AUTO WALK BUTTON
+
+keyw=25 #W KEY TO TOGGLE OFF THE AUTOWALK
+
+esc=9 #Escape key to toggle off all
 
   #use the same method to determine the settings for mouse
-mouseID=14 #device ID
+mouseID=13 #device ID
 
 mbuttorkey=button #button or key
 
@@ -59,119 +65,158 @@ down=down #Set to "Down" if [sleep 5; xinput query-state "DEVICE ID"] output was
 up=up #Set to "Up" if [sleep 5; xinput query-state "DEVICE ID"] output was "key[112]=Up" check the surrounding keys to determine which to use
 
 #===============END===============#
-
-echo "WAITING "$timer" SECONDS FOR "$win" TO START..."
+printf "\nAUTO CLICKER:RALT AND WALKING:RSHIFT SCRIPT\n\nWAITING $timer SECONDS FOR $win TO START...\n\n"
 
 sleep $timer
 
-clear
+winid="$(xdotool search --name '$win')";
 
-echo "AUTO CLICKER SCRIPT: PRESS DEVICE ID "$devid": "$buttorkey":"$key" TO TOGGLE AND CLICK TO TOGGLE OFF"
+echo "AWAITING INPUT..."
 
 tog=false
+
+togw=false
+
 nofocus=false
 #Determines window Focus toggles off if window loss focus
-checkfocus()
-{
-    if [ $nofocus = false ] && [ $tog = true ]; then
-        echo $win" LOST FOCUS TOGGLING OFF"
-    fi
+checkfocus(){
+  if [ $nofocus = false ] && [ $tog = true ]; then
+      echo "$win LOST FOCUS TOGGLING AC OFF"
+  fi
+}
+checkfocusw(){
+  if [ $nofocus = false ] && [ $togw = true ]; then
+      echo "$win LOST FOCUS TOGGLING AW OFF"
+  fi
 }
 #togglable logging to prevent Output Clutter
-logging()
-{
+logging(){
   if [ $log = false ]; then
     clear
     echo "AWAITING INPUT..."
   fi
 }
 #actual click logic
-skipstory()
-{
-    if [ $tog = true ]; then
-        xdotool click 1 
-    fi
+skipstory(){
+  if [ $tog = true ]; then
+      xdotool click --window '$winid' 1
+      xdotool key --window '$winid' 'F1'
+  fi
 }
 #toggle on off logic & moves mouse to specified location 
-toggle()
-{
-    if [ $tog = false ]
-    then
-        logging
-        echo TOGGLE ON
-        
-        tog=true
-        
-        #Move mouse to bottom item
-        xdotool mousemove --screen 0 $xy
-    else
-        logging
-        echo TOGGLE OFF
-        
-        tog=false
-    fi
+toggle(){
+if [ $tog = false ]; then
+    logging
+    echo "CLICKER TOGGLE ON"
+    
+    tog=true
+
+    #Move mouse to bottom item
+    xdotool mousemove --screen 0 $xy
+else
+    logging
+    echo "CLICKER TOGGLE OFF"
+
+    tog=false
+fi
+}
+#toggles autowalk on/off outputs to console
+togglew(){
+if [ $togw = false ]; then
+    logging
+    echo "AUTOWALK TOGGLE ON"
+    xdotool keydown --window '$winid' 'w'
+    togw=true
+else
+    logging
+    echo "AUTOWALK TOGGLE OFF"
+    xdotool keyup --window '$winid' 'w'
+    togw=false
+fi
 }
 #infinite loop to contiously check if Game Exists and if the window is active
 while :
-    do
-        #check if Game exists 
-        if wmctrl -l | grep "$win" | grep -v "$browser" > /dev/null; then
-            #save active window to variable
-            curwin="$(xdotool getwindowfocus getwindowname | uniq)"
-            #check if active window is the same as the Game Named above
-            if [ "$curwin" = "$win" ]; then
-                #constantly execute the function skip story (wont do anything if tog=false)
-                skipstory
-                #Sets nofocus to false because confirmed Game is active window
-                nofocus=false
-                #if exists and focused then check if the Specified key is down if so AutoClick
-                while xinput query-state $devid | grep "$buttorkey\[$key\]=$down" > /dev/null;
-                    do
-                        #enables autoclick
-                        toggle
-                        # wait .5 secounds to prevent spamming the output
-                        sleep 0.5
-                    done
-                
-                #if exists and focused then check if the mouse 1 key is down if so Toggle OFF
-                while xinput query-state $mouseID | grep "$mbuttorkey\[$mkey\]=$down" > /dev/null; 
-                    do
-                        #checks if the the toggle is on
-                        if [ $tog = true ]; then
-                            #clear the output
-                            logging
-                            #ouput if toggle is on and mouse is clicked
-                            echo "MOUSE CLICKED TOGGLING OFF"
-                        fi
-                        #turns off the Autoclicker
-                        tog=false
-                        # wait .5 secounds to prevent spamming the output
-                        sleep 0.5
-                    done
-            #only executes when game has lost focus
-            else
-                logging
-                #tell the user that the game window has lost focus
-                checkfocus
-                #toggle off Autoclicker
-                tog=false
-                #set nofocus to true to prevent output spam
-                nofocus=true
-                #wait 2 seconds to prevent the program from infinitely looping too fast when not focused
-                sleep 2
-            fi
-        else
-            #clear the output
-            clear
-            #Restore the GameOverlayRender.so to allow use for other games
-            . ~/.scripts/RestoreGOR.sh
-            #Tell the user that the game has closed
-            echo $win" HAS CLOSED"
-            #allow for 5 seconds for the user to read the output
-            sleep 5
-            #if logging is not enabled just exit the program
-            if [ $log = false ]; then
-                exit
-            fi  
+  do
+    #check if Game exists 
+    if wmctrl -l | grep "$win" | grep -v "$browser" > /dev/null; then
+      #save active window to variable
+      curwin="$(xdotool getwindowfocus getwindowname | uniq)"
+      #check if active window is the same as the Game Named above
+      if [ "$curwin" = "$win" ]; then
+        #constantly execute the function skip story (wont do anything if tog=false)
+        skipstory
+        #Sets nofocus to false because confirmed Game is active window
+        nofocus=false
+        #if exists and focused then check if the Specified key is down if so AutoClick
+        if xinput query-state $devid | grep "$buttorkey\[$key\]=$down" > /dev/null; then
+          #enables autoclick
+          toggle
+          # wait .5 secounds to prevent spamming the output
+          sleep 0.5
         fi
-    done
+            
+        #if exists and focused then check if the mouse 1 key is down if so Toggle OFF
+        if xinput query-state $mouseID | grep "$mbuttorkey\[$mkey\]=$down" > /dev/null; then
+          #checks if the the toggle is on
+          if [ $tog = true ]; then
+            #clear the output
+            logging
+            #ouput if toggle is on and mouse is clicked
+            echo "MOUSE CLICKED TOGGLING AC OFF"
+            fi
+              #turns off the Autoclicker
+              tog=false
+              # wait .5 secounds to prevent spamming the output
+              sleep 0.5
+            fi
+            #if exists and focused then check if the specified key is pressed and toggles the AutoWalk
+            if xinput query-state $devid | grep "$buttorkey\[$key2\]=$down" > /dev/null; then
+              #Toggles autowalk
+              togglew
+              #wait ,5 second to prevent spamming the output
+              sleep 0.5
+            fi
+            if xinput query-state $devid | grep "$buttorkey\[$keyw\]=$down" > /dev/null; then
+              if [ $togw = true ]; then
+                logging
+                echo "W PRESSED TOGGLING AW OFF"
+              fi
+                togw=false
+            fi
+            if xinput query-state $devid | grep "$buttorkey\[$esc\]=$down" > /dev/null; then
+              logging
+              tog=false
+              togw=false
+              echo "ESCAPE KEY PRESSED ALL TOGGLES DISABLED"
+            fi
+        #only executes when game has lost focus
+      else
+        logging
+        #tell the user that the game window has lost focus
+        checkfocus
+
+        checkfocusw
+        #toggle off Autoclicker
+        tog=false
+        #toggle off AutoWalking
+        togw=false
+        #set nofocus to true to prevent output spam
+        nofocus=true
+        #wait 2 seconds to prevent the program from infinitely looping too fast when not focused
+        sleep 2
+      fi
+    else
+      #clear the output
+      clear
+      #Restore the GameOverlayRender.so to allow use for other games
+      . ~/.scripts/RestoreGOR.sh
+      #Tell the user that the game has closed
+      echo $win" HAS CLOSED"
+      #allow for 5 seconds for the user to read the output
+      sleep 5
+      #if logging is not enabled just exit the program
+      if [ $log = false ]; then
+          exit
+      fi  
+    fi
+done
