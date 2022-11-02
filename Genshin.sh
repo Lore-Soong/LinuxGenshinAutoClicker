@@ -30,14 +30,17 @@ log=false
 
   #Sets this to match the window decoration Title of the game window
 win="Genshin Impact"
+  #PREVENT AFK COMBAT mashes F1 in tandom with autoclicker to effectively pause the game the moment the cutseens and textboxes exit
+prevComb=true
+#====***IMPORTATNT*** PLEASE SET THESE VARIABLES BELOW TO ALLOW THE SCRIPT TO WORK FOR YOU===#
 
   #determine a location that the mouse will move to when activating the Autoclicker
-xy="1724 1388"
+xy="1724 1388" #GET MOUSE LOCATION WITH [sleep 7;xdotool getmouselocation] run the command & position mouse over the the in game reply buttons
 
-  #exclude your browser in window search
+  #exclude your browser in window search (so if you have a browser open looking up genshin content it wont register as the game window)
 browser="Waterfox"
 
-#====IMPORTATNT PLEASE SET THESE VARIABLES TO ALLOW THE SCRIPT TO WORK FOR YOU===#
+#=========*****INPUT DEVICE SETTINGS*****=============#
 
   #My Default = Logitech G500s Laser Gaming Mouse Keyboard	id=18 Key112 = PGup
   #use [xinput list] (no brackets) to determine which device you are using Auto Cancel (Keyboard, Mouse, Controller etc.)to get the DEVICE ID
@@ -69,7 +72,7 @@ down=down #Set to "Down" if [sleep 5; xinput query-state "DEVICE ID"] output was
 
 up=up #Set to "Up" if [sleep 5; xinput query-state "DEVICE ID"] output was "key[112]=Up" check the surrounding keys to determine which to use
 
-#===============END===============#
+#===============OPTIONS-END===============#(EDITING ANYTHING BELOW THIS POINT MIGHT BREAK THE SCRIPT)
 printf "\nAUTO CLICKER:RALT AND WALKING:RSHIFT SCRIPT\n\nWAITING $timer SECONDS FOR $win TO START...\n\n"
 
 sleep $timer
@@ -105,7 +108,9 @@ logging(){
 skipstory(){
   if [ $tog = true ]; then
       xdotool click --window '$winid' 1
-      xdotool key --window '$winid' 'F1'
+      if [ $prevComb = true ]; then
+        xdotool key --window '$winid' 'F1'
+      fi
   fi
 }
 #toggle on off logic & moves mouse to specified location 
@@ -197,9 +202,9 @@ while :
         #only executes when game has lost focus
       else
         logging
-        #tell the user that the game window has lost focus
+        #tell the user that the game window has lost focus output clicking has stopped
         checkfocus
-
+        #tell user the game has lost focus output walk has stopped
         checkfocusw
         #toggle off Autoclicker
         tog=false
