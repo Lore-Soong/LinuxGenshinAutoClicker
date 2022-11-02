@@ -11,10 +11,15 @@
     #[gamemoderun %command% & ~/.scripts/Genshin.sh] (no brackets)
       #OR [gamemoderun %command% & ~/.scripts/Genshin.sh > ~/.scripts/output.txt] and use [tail -f ~/.scripts/output.txt] in a seperate terminal to Debug issues (also no brackets)
 
-#GameOverlay attempts to hook to script on game start using LAUNCH OPTIONS. comment this out with a # if you only run the script manually.
+#GameOverlay attempts to hook to script on game start using LAUNCH OPTIONS.
 #The link to this script is on this scripts GitHub Page - it just changes the name of GameOverlayRender.so to GOR64.so and GOR32.so and restores it at the end of this script
 #if you have a fix for this please let me know! create an issue in the Github Page thank you!
-. ~/.scripts/KillGOR.sh
+
+GOR=true #SET TO FALSE IF RUNNING THE SCRIPT THROUGH STEAM LAUNCH OPTIONS 
+
+if [ $GOR = false ]; then
+  . ~/.scripts/KillGOR.sh
+fi
 
 #=============OPTIONS=============#
   #Set the time before the script starts to keep the script running while the game Starts up
@@ -209,7 +214,9 @@ while :
       #clear the output
       clear
       #Restore the GameOverlayRender.so to allow use for other games
-      . ~/.scripts/RestoreGOR.sh
+      if [ $GOR = false ]; then
+        . ~/.scripts/RestoreGOR.sh
+      fi
       #Tell the user that the game has closed
       echo $win" HAS CLOSED"
       #allow for 5 seconds for the user to read the output
