@@ -36,11 +36,11 @@ prevComb=true
 
 #====***IMPORTATNT*** PLEASE SET THESE VARIABLES BELOW TO ALLOW THE SCRIPT TO WORK FOR YOU===#
 
-  #determine a location that the mouse will move to when activating the Autoclicker
-xy="1724 1388" #GET MOUSE LOCATION WITH [sleep 7;xdotool getmouselocation] run the command & position mouse over the the in game reply buttons
+  #determine a location that the mouse will move to when activating the Autoclicker (Default for 1080p = x1342 y720)
+xy="1342 720" #GET MOUSE LOCATION WITH [sleep 7;xdotool getmouselocation] run the command & position mouse over the the in game reply buttons
 
   #exclude your browser in window search (so if you have a browser open looking up genshin content it wont register as the game window)
-browser="Waterfox"
+browser="Firefox"
 
 #=========*****INPUT DEVICE SETTINGS*****=============#
 
