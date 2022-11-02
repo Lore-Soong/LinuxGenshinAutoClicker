@@ -30,8 +30,10 @@ log=false
 
   #Sets this to match the window decoration Title of the game window
 win="Genshin Impact"
+
   #PREVENT AFK COMBAT mashes F1 in tandom with autoclicker to effectively pause the game the moment the cutseens and textboxes exit
 prevComb=true
+
 #====***IMPORTATNT*** PLEASE SET THESE VARIABLES BELOW TO ALLOW THE SCRIPT TO WORK FOR YOU===#
 
   #determine a location that the mouse will move to when activating the Autoclicker
